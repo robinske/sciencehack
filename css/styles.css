@@ -1,0 +1,23 @@
+*{ 
+	margin: 0; 
+	padding: 0; 
+	border: 0;
+	-webkit-box-sizing: border-box;
+}
+
+body {
+	background: #000000;
+	overflow: hidden;
+}
+
+#main-container,
+#logs{
+	position: absolute;
+	top: 0;
+	left: 0;	
+}
+
+#logs{
+	padding: 10px;
+	color: #ffffff;
+}
