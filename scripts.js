@@ -1,34 +1,55 @@
 LEAP = {
 	init: function(){
-		Leap.loop(function(data) {
-			LEAP.filterData(data);
+		Leap.loop(function(frame) {
+			LEAP.filterData(frame);
 		});		
 	},
-	filterData: function(data){
-		if( data.valid ){		
-			if(typeof data.hands[0] !== "undefined" ){
+	filterData: function(frame){
+		if( frame.valid ){		
+			if(typeof frame.hands[0] !== "undefined" ){
 				
-				var hand = data.hands[0];
-				var hand2 = data.hands[1];
+				var hand = frame.hands[0];
 
-//				console.log(hand);
-				DEMO.sphereRadius = DEMO.Functions.setToRange( hand.sphereRadius, [50,180], [10,400] );
+				console.log(frame.hands.length)
 				
-				// DEMO.spherePosX = DEMO.Functions.setToRange( hand.palmPosition[0], [-200,200], [-700,700], DEMO.spherePosX );
-				// DEMO.spherePosY = DEMO.Functions.setToRange( hand.palmPosition[1], [50,300], [-600,300], DEMO.spherePosY );
-				// DEMO.spherePosZ = DEMO.Functions.setToRange( hand.palmPosition[2], [-50,300], [-250,200], DEMO.spherePosZ );
+
+				if( frame.hands.length == 2){
+					var hand2 = frame.hands[1];
+
+					var hand1Center = hand.sphereCenter // [x, y, z]
+					var hand2Center = hand2.sphereCenter // [x, y, z]
+
+					var xd = hand1Center[0] - hand2Center[0]
+					var yd = hand1Center[1] - hand2Center[1]
+					var zd = hand1Center[2] - hand2Center[2]
+
+					var handDistance = Math.sqrt(xd*xd + yd*yd + zd*zd)
+
+					console.log(handDistance)
+
+					STAR.sphereRadius = handDistance
+				}
+
+				// STAR.sphereRadius = STAR.Functions.setToRange( hand.sphereRadius, [50,180], [10,400] );
+
+				// STAR.hand1 = hand
+				// STAR.hand2 = hand2
 				
-				DEMO.sphereRotX = DEMO.Functions.setToRange( hand.rotation[0][1], [-1,1], [1,-1], DEMO.sphereRotX );
-				DEMO.sphereRotY = DEMO.Functions.setToRange( hand.rotation[1][2], [-1,1], [2.5,-2.5], DEMO.sphereRotY );
-				DEMO.sphereRotZ = DEMO.Functions.setToRange( hand.rotation[0][2], [-1,1], [-2,2], DEMO.sphereRotZ );
+				// STAR.spherePosX = STAR.Functions.setToRange( hand.palmPosition[0], [-200,200], [-700,700], STAR.spherePosX );
+				// STAR.spherePosY = STAR.Functions.setToRange( hand.palmPosition[1], [50,300], [-600,300], STAR.spherePosY );
+				// STAR.spherePosZ = STAR.Functions.setToRange( hand.palmPosition[2], [-50,300], [-250,200], STAR.spherePosZ );
 				
-				DEMO.update();
+				STAR.sphereRotX = STAR.Functions.setToRange( hand.rotation[0][1], [-1,1], [1,-1], STAR.sphereRotX );
+				STAR.sphereRotY = STAR.Functions.setToRange( hand.rotation[1][2], [-1,1], [2.5,-2.5], STAR.sphereRotY );
+				STAR.sphereRotZ = STAR.Functions.setToRange( hand.rotation[0][2], [-1,1], [-2,2], STAR.sphereRotZ );
+				
+				STAR.update();
 			}
 		}
 	}
 };
 
-DEMO = {
+STAR = {
 	renderer: null,
 	camera: null,
 	scene: null,
@@ -51,59 +72,59 @@ DEMO = {
 
 	
 	init: function(){
-		DEMO.setupScene();
-		DEMO.addLight();
-		DEMO.createSphere();
+		STAR.setupScene();
+		STAR.addLight();
+		STAR.createSphere();
 		LEAP.init();
 	},
 	update: function(){
-		DEMO.createSphere();
+		STAR.createSphere();
 	},
 	setupScene: function(){
 
-		DEMO.windowWidth	=	$(window).width(),
-		DEMO.windowHeight	=	$(window).height(),
-		DEMO.windowDepth	=	500;
+		STAR.windowWidth	=	$(window).width(),
+		STAR.windowHeight	=	$(window).height(),
+		STAR.windowDepth	=	500;
 
 		var viewingAngle =	60,
-			aspect =		DEMO.windowWidth / DEMO.windowHeight,
+			aspect =		STAR.windowWidth / STAR.windowHeight,
 			near =			0.1,
 			far =			10000;
 
 		var $container = $('#main-container');
 		$container.css({
-			'width': DEMO.windowWidth+'px',
-			'height': DEMO.windowHeight+'px'
+			'width': STAR.windowWidth+'px',
+			'height': STAR.windowHeight+'px'
 		});
 
-		DEMO.renderer =	new THREE.WebGLRenderer();
-		DEMO.camera =	new THREE.PerspectiveCamera(
+		STAR.renderer =	new THREE.WebGLRenderer();
+		STAR.camera =	new THREE.PerspectiveCamera(
 			viewingAngle,
 			aspect,
 			near,
 			far
 		);
 			
-		DEMO.scene = new THREE.Scene();
+		STAR.scene = new THREE.Scene();
 		
-		DEMO.scene.add(DEMO.camera);
-		DEMO.camera.position.z = 500;
+		STAR.scene.add(STAR.camera);
+		STAR.camera.position.z = 500;
 
-		// cameraControls = new THREE.LeapCameraControls(DEMO.camera);
+		// cameraControls = new THREE.LeapCameraControls(STAR.camera);
 
 		// cameraControls.panHands = 2;
 		// cameraControls.rotateEnabled = false;
 
 		
-		DEMO.renderer.setSize(DEMO.windowWidth, DEMO.windowHeight);
+		STAR.renderer.setSize(STAR.windowWidth, STAR.windowHeight);
 		
-		$container.append(DEMO.renderer.domElement);
+		$container.append(STAR.renderer.domElement);
 	},
 	createSphere: function(){
 		
-		var radius = DEMO.sphereRadius,
-			segments = 10,
-			rings = 10;
+		var radius = STAR.sphereRadius,
+			segments = 20,
+			rings = 20;
 	
 		var sphereMaterial = new THREE.MeshPhongMaterial({
 			specular: 0xffffff,
@@ -121,36 +142,39 @@ DEMO = {
 			sphereMaterial
 		);
 			
-		DEMO.scene.add(mesh);	
+		STAR.scene.add(mesh);	
 				
-		mesh.position.set( DEMO.spherePosX, DEMO.spherePosY, DEMO.spherePosZ );		
-		mesh.rotation.set(DEMO.sphereRotY, DEMO.sphereRotZ, DEMO.sphereRotX);		
+		mesh.position.set( STAR.spherePosX, STAR.spherePosY, STAR.spherePosZ );		
+		mesh.rotation.set(STAR.sphereRotY, STAR.sphereRotZ, STAR.sphereRotX);		
 		mesh.matrix.setRotationFromEuler(mesh.rotation);
 		
-		DEMO.renderScene();		
-		DEMO.scene.remove(mesh);
+		STAR.renderScene();		
+		STAR.scene.remove(mesh);
 	},
 	addLight: function(){
 		var pointLight = new THREE.PointLight(0xFFFFFF);
 		pointLight.position.x = 200;
 		pointLight.position.y = 500;
 		pointLight.position.z = 1000;		
-		DEMO.scene.add(pointLight);
+		STAR.scene.add(pointLight);
 	},
 	renderScene: function(){
-		DEMO.renderer.render(DEMO.scene, DEMO.camera);
-		DEMO.updateLog();
+		STAR.renderer.render(STAR.scene, STAR.camera);
+		STAR.updateLog();
 	},
 	updateLog: function(){
-		$('#posX').html( DEMO.spherePosX.toFixed(2) );
-		$('#posY').html( DEMO.spherePosY.toFixed(2) );
-		$('#posZ').html( DEMO.spherePosZ.toFixed(2) );
+		$('#posX').html( STAR.spherePosX.toFixed(2) );
+		$('#posY').html( STAR.spherePosY.toFixed(2) );
+		$('#posZ').html( STAR.spherePosZ.toFixed(2) );
 		
-		$('#rotX').html( DEMO.sphereRotX.toFixed(2) );
-		$('#rotY').html( DEMO.sphereRotY.toFixed(2) );
-		$('#rotZ').html( DEMO.sphereRotZ.toFixed(2) );
+		$('#rotX').html( STAR.sphereRotX.toFixed(2) );
+		$('#rotY').html( STAR.sphereRotY.toFixed(2) );
+		$('#rotZ').html( STAR.sphereRotZ.toFixed(2) );
 		
-		$('#radius').html( DEMO.sphereRadius.toFixed(2) );
+		$('#radius').html( STAR.sphereRadius.toFixed(2) );
+		// $('#hand1').html( STAR.hand1.toFixed(2) );
+		// $('#hand2').html( STAR.hand2.toFixed(2) );
+
 	},
 	Functions: {
 		setToRange: function(value, srcRange, dstRange, fallback){
@@ -167,5 +191,5 @@ DEMO = {
 };
 
 //---[ HERE WE GO... ]--------------------------------------------------------//
-$(document).ready( DEMO.init );
+$(document).ready( STAR.init );
 //----------------------------------------------------------------------------//
