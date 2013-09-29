@@ -5,13 +5,11 @@ LEAP = {
 		});		
 	},
 	filterData: function(frame){
+
 		if( frame.valid ){		
 			if(typeof frame.hands[0] !== "undefined" ){
 				
 				var hand = frame.hands[0];
-
-				console.log(frame.hands.length)
-				console.log(frame.keys)
 
 				if (typeof frame.gestures[0] !== "undefined") {
 					console.log(frame.gestures[0])
@@ -24,8 +22,8 @@ LEAP = {
 				if( frame.hands.length == 2 ){
 					var hand2 = frame.hands[1];
 
-					var hand1Center = hand.sphereCenter // [x, y, z]
-					var hand2Center = hand2.sphereCenter // [x, y, z]
+					var hand1Center = hand.sphereCenter
+					var hand2Center = hand2.sphereCenter
 
 					var xd = hand1Center[0] - hand2Center[0]
 					var yd = hand1Center[1] - hand2Center[1]
@@ -33,8 +31,10 @@ LEAP = {
 
 					var handDistance = Math.sqrt(xd*xd + yd*yd + zd*zd)
 
-					console.log(handDistance)
-
+					// console.log(handDistance)
+					if (handDistance < 40) {
+						STAR.blowUp = true
+					}
 
 					STAR.sphereRadius = handDistance
 				}
@@ -47,14 +47,9 @@ LEAP = {
 
 				// STAR.sphereRadius = STAR.Functions.setToRange( hand.sphereRadius, [50,180], [10,400] );
 
-				// STAR.hand1 = hand
-				// STAR.hand2 = hand2
-				
 				// STAR.spherePosX = STAR.Functions.setToRange( hand.palmPosition[0], [-200,200], [-700,700], STAR.spherePosX );
 				// STAR.spherePosY = STAR.Functions.setToRange( hand.palmPosition[1], [50,300], [-600,300], STAR.spherePosY );
 				// STAR.spherePosZ = STAR.Functions.setToRange( hand.palmPosition[2], [-50,300], [-250,200], STAR.spherePosZ );
-				
-				
 				
 				STAR.update();
 			}
@@ -79,6 +74,8 @@ STAR = {
 	sphereRotX: 0,
 	sphereRotY: 0,
 	sphereRotZ: 0,
+
+	blowUp: false,
 	
 	rotationMatrix: new THREE.Matrix4(),
 
@@ -91,7 +88,11 @@ STAR = {
 		LEAP.init();
 	},
 	update: function(){
-		STAR.createSphere();
+		if (STAR.blowUp === true) {
+			STAR.blowUp();
+		} else {
+			STAR.createSphere();
+		}
 	},
 	setupScene: function(){
 
@@ -164,6 +165,11 @@ STAR = {
 		STAR.renderScene();		
 		STAR.scene.remove(mesh);
 	},
+	blowUp: function(){
+		
+		STAR.renderScene();		
+		STAR.scene.remove(mesh);
+	},
 	addLight: function(){
 		var pointLight = new THREE.PointLight(0xFFFFFF);
 		pointLight.position.x = 200;
@@ -185,8 +191,6 @@ STAR = {
 		$('#rotZ').html( STAR.sphereRotZ.toFixed(2) );
 		
 		$('#radius').html( STAR.sphereRadius.toFixed(2) );
-		// $('#hand1').html( STAR.hand1.toFixed(2) );
-		// $('#hand2').html( STAR.hand2.toFixed(2) );
 
 	},
 	Functions: {
