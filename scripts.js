@@ -11,9 +11,17 @@ LEAP = {
 				var hand = frame.hands[0];
 
 				console.log(frame.hands.length)
+				console.log(frame.keys)
+
+				if (typeof frame.gestures[0] !== "undefined") {
+					console.log(frame.gestures[0])
+					if (frame.gestures[0].type == "circle") {
+						console.log("circle gesture detected")
+					}
+				}
 				
 
-				if( frame.hands.length == 2){
+				if( frame.hands.length == 2 ){
 					var hand2 = frame.hands[1];
 
 					var hand1Center = hand.sphereCenter // [x, y, z]
@@ -27,7 +35,14 @@ LEAP = {
 
 					console.log(handDistance)
 
+
 					STAR.sphereRadius = handDistance
+				}
+
+				if( frame.hands.length == 1 ) {
+					STAR.sphereRotX = STAR.Functions.setToRange( hand.rotation[0][1], [-1,1], [1,-1], STAR.sphereRotX );
+					STAR.sphereRotY = STAR.Functions.setToRange( hand.rotation[1][2], [-1,1], [2.5,-2.5], STAR.sphereRotY );
+					STAR.sphereRotZ = STAR.Functions.setToRange( hand.rotation[0][2], [-1,1], [-2,2], STAR.sphereRotZ );
 				}
 
 				// STAR.sphereRadius = STAR.Functions.setToRange( hand.sphereRadius, [50,180], [10,400] );
@@ -39,9 +54,7 @@ LEAP = {
 				// STAR.spherePosY = STAR.Functions.setToRange( hand.palmPosition[1], [50,300], [-600,300], STAR.spherePosY );
 				// STAR.spherePosZ = STAR.Functions.setToRange( hand.palmPosition[2], [-50,300], [-250,200], STAR.spherePosZ );
 				
-				STAR.sphereRotX = STAR.Functions.setToRange( hand.rotation[0][1], [-1,1], [1,-1], STAR.sphereRotX );
-				STAR.sphereRotY = STAR.Functions.setToRange( hand.rotation[1][2], [-1,1], [2.5,-2.5], STAR.sphereRotY );
-				STAR.sphereRotZ = STAR.Functions.setToRange( hand.rotation[0][2], [-1,1], [-2,2], STAR.sphereRotZ );
+				
 				
 				STAR.update();
 			}
